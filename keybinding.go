@@ -43,8 +43,15 @@ func Parse(input string) (interface{}, Modifier, error) {
 	tokens := strings.Split(input, "+")
 	for _, t := range tokens {
 		normalized := strings.Title(strings.ToLower(t))
-		if t == "Alt" {
+		switch {
+		case t == "Alt":
 			modifier = ModAlt
+			continue
+		case t == "Command" || t == "command" || t == "Cmd" || t == "cmd":
+			modifier = ModCommand
+			continue
+		case t == "Option" || t == "option":
+			modifier = ModOption
 			continue
 		}
 		cleaned = append(cleaned, normalized)
@@ -290,10 +297,12 @@ const (
 const (
 	ModNone Modifier = Modifier(0)
 	ModAlt           = Modifier(tcell.ModAlt)
-
 	// ModShift only makes sense on keys that are not characters like the
 	// arrow keys and any mouse keys
 	// Character keys will instead be triggerd as their translated variant.
 	ModShift     = Modifier(tcell.ModShift)
 	ModMouseCtrl = Modifier(tcell.ModCtrl)
+	// Keys for macOS
+	ModOption  Modifier = Modifier(0x0002)
+	ModCommand Modifier = Modifier(0x0004)
 )
